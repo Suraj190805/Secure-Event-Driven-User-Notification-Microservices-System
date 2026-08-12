@@ -4,7 +4,7 @@ A secure, reliable, and production-ready microservices architecture showcasing a
 
 ---
 
-## 1. Architecture Diagram
+
 
 ## 1. Architecture Diagram
 
