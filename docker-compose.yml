@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  nats:
+    image: nats:2-alpine
+    command: ["--jetstream", "--store_dir", "/data"]
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    volumes:
+      - nats-data:/data
+    restart: unless-stopped
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - NATS_URL=nats://nats:4222
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+    depends_on:
+      - nats
+    restart: unless-stopped
+
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - NATS_URL=nats://nats:4222
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+    depends_on:
+      - nats
+    restart: unless-stopped
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - JWT_SECRET=${JWT_SECRET}
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+      - USER_SERVICE_URL=http://user-service:3001
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3002
+    depends_on:
+      - user-service
+      - notification-service
+    restart: unless-stopped
+
+volumes:
+  nats-data:
