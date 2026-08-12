@@ -8,11 +8,16 @@ A secure, reliable, and production-ready microservices architecture showcasing a
 
 ```mermaid
 flowchart TD
-    Client[Client / Browser] -- 1. HTTPS / JWT --> Gateway[API Gateway :3000]
+    Client[Client / Browser] -->|1. HTTPS / JWT| Gateway[API Gateway :3000]
 
-    subgraph Internal Network (Private Subnet)
-        Gateway -- 2. Proxy + x-internal-key Header --> UserService[User Service :3001]
-        Gateway -- 2. Proxy + x-internal-key Header --> NotificationService[Notification Service :3002]
+    subgraph InternalNetwork["Internal Network (Private Subnet)"]
+        Gateway -->|2. Proxy + x-internal-key Header| UserService[User Service :3001]
+        Gateway -->|2. Proxy + x-internal-key Header| NotificationService[Notification Service :3002]
+    end
+
+    subgraph EventBroker["Event Broker (NATS JetStream)"]
+        UserService -->|3. Publish Event: user.created| NATS[NATS Broker :4222]
+        NATS -->|4. Consume Event| NotificationService
     end
 
     subgraph Event Broker (NATS JetStream)
