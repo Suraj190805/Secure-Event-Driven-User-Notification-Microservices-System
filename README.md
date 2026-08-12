@@ -17,12 +17,7 @@ flowchart TD
 
     subgraph EventBroker["Event Broker (NATS JetStream)"]
         UserService -->|3. Publish Event: user.created| NATS[NATS Broker :4222]
-        NATS -->|4. Consume Event| NotificationService
-    end
-
-    subgraph Event Broker (NATS JetStream)
-        UserService -- 3. Publish Event: user.created --> NATS[NATS Broker :4222]
-        NATS -- 4. Deliver (Durable Consumer) --> NotificationService
+        NATS -->|4. Deliver Durable Event| NotificationService
     end
 
     classDef external fill:#f9f,stroke:#333,stroke-width:2px;
