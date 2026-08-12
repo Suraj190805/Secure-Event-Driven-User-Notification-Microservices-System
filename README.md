@@ -6,30 +6,10 @@ A secure, reliable, and production-ready microservices architecture showcasing a
 
 ## 1. Architecture Diagram
 
-```mermaid
-flowchart TD
-    Client[Client / Browser] -->|1. HTTPS / JWT| Gateway[API Gateway :3000]
+## 1. Architecture Diagram
 
-    subgraph InternalNetwork["Internal Network (Private Subnet)"]
-        Gateway -->|2. Proxy + x-internal-key Header| UserService[User Service :3001]
-        Gateway -->|2. Proxy + x-internal-key Header| NotificationService[Notification Service :3002]
-    end
+![System Architecture](./images/architecture.png)
 
-    subgraph EventBroker["Event Broker (NATS JetStream)"]
-        UserService -->|3. Publish Event: user.created| NATS[NATS Broker :4222]
-        NATS -->|4. Deliver Durable Event| NotificationService
-    end
-
-    classDef external fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef gateway fill:#bbf,stroke:#333,stroke-width:2px;
-    classDef service fill:#bfb,stroke:#333,stroke-width:2px;
-    classDef broker fill:#fbb,stroke:#333,stroke-width:2px;
-
-    class Client external;
-    class Gateway gateway;
-    class UserService,NotificationService service;
-    class NATS broker;
-```
 
 ### Components:
 - **API Gateway (Port 3000):** Acts as the single entry point. Responsibilities include CORS management, security header injection via `helmet`, IP rate limiting, JWT token validation, and proxy routing to downstream services.
